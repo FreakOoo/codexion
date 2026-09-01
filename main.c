@@ -20,9 +20,11 @@
 
 long main_start;
 
-main_start = mytime();
 
 
+// I NEED TO MOVE ALL THIS SHIT OUT OF MAIN
+//
+//
 static void	init_sticks(t_stick *sticks, int n)
 {
 	int	i;
@@ -137,6 +139,8 @@ static void	read_config(int *n, int *ttb, int *ttc, int *ttd, int *ttr,
 
 int	main(void)
 {
+  main_start = mytime();
+
 	int			n;
 	int			time_to_burnout;
 	int			time_to_compile;

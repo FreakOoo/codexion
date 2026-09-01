@@ -10,7 +10,6 @@ void	*compile(void *arg)
 
   // ADD TIMESTAMP HERE
 	printf("coder %d has compiled (compile # %d )\n", coder->name, coder->compiles);
-		coder->name, coder->compiles);
 	pthread_mutex_unlock(&coder->config->print_lock);
 	return (NULL);
 }
@@ -77,4 +76,5 @@ void	*coder_routine(void *arg)
 		unlock_sticks(coder);
 	}
 	return (NULL);
+}
 
