@@ -5,7 +5,6 @@
 git add .
 git commit -m "small update"
 git push
-git push github master
 sleep 2 
 clear
 tree
