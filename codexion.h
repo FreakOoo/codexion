@@ -34,6 +34,7 @@
 
 //tv stands for timevalue
 long mytime(void);
+long start;
 
 typedef struct s_config
 {

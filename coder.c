@@ -1,3 +1,4 @@
+//NEED TO USE START not mytime, mytime -start even
 #include "codexion.h"
 
 void	*compile(void *arg)
@@ -6,10 +7,10 @@ void	*compile(void *arg)
 
 	coder = (t_person *)arg;
 	coder->compiles++;
+  coder-> last_compile = mytime();
 	pthread_mutex_lock(&coder->config->print_lock);
 
-  // ADD TIMESTAMP HERE
-	printf("coder %d has compiled (compile # %d )\n", coder->name, coder->compiles);
+	printf("%ld coder %d has compiled (compile # %d )\n",mytime(), coder->name, coder->compiles);
 	pthread_mutex_unlock(&coder->config->print_lock);
 	return (NULL);
 }
@@ -24,12 +25,9 @@ static void	lock_sticks(t_person *coder)
 	if (first == second)
 	{
 		pthread_mutex_lock(&first->lock);
-    //ADD TIMESTAMP, lock first dongle
-    //also make sure it prints the coder number here
-    //
-    // HAVE YET TO FEED THESE PRINTS A TIMESTAMP.
-    //
-    printf(" %d has taken a dongle\n", coder->name);
+    //for now using mytime, might have to coordinate with program start
+    //time in main later.
+    printf("%ld %d has taken a dongle\n",mytime(), coder->name);
 		coder->held_sticks[0] = first;
 		coder->held_count = 1;
 		return ;
@@ -42,11 +40,11 @@ static void	lock_sticks(t_person *coder)
 	pthread_mutex_lock(&first->lock);
     //ADD TIMESTAMP Dongle 1
     //also make sure it prints the coder number here
-    printf(" %d has taken a dongle\n", coder->name);
+    printf("%ld %d has taken a dongle\n",mytime(), coder->name);
 	pthread_mutex_lock(&second->lock);
     //ADD TIMESTAMP Dongle 2
     //also make sure it prints the coder number here
-    printf(" %d has taken a dongle\n", coder->name);
+    printf("%ld %d has taken a dongle\n",mytime(), coder->name);
 	coder->held_sticks[0] = coder->left_stick;
 	coder->held_sticks[1] = coder->right_stick;
 	coder->held_count = 2;
