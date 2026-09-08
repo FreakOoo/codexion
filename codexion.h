@@ -34,12 +34,12 @@
 
 //tv stands for timevalue
 long mytime(void);
-long start;
 
 typedef struct s_config
 {
 	int				number_of_compiles_required;
 	pthread_mutex_t	print_lock;
+  long start;
 }	t_config;
 typedef struct s_stick
 {
@@ -62,6 +62,6 @@ typedef struct s_person
 }	t_person;
 
 void	*coder_routine(void *arg);
-void	*compile(void *arg);
+void	*compile(t_person * coder);
 
 #endif

@@ -1,16 +1,16 @@
 //NEED TO USE START not mytime, mytime -start even
+//need to do some debugging to see where it's actually pulling time from
+
+
 #include "codexion.h"
 
-void	*compile(void *arg)
+void	*compile(t_person * coder)
 {
-	t_person	*coder;
-
-	coder = (t_person *)arg;
 	coder->compiles++;
-  coder-> last_compile = mytime();
+  coder-> last_compile = mytime() - coder->config->start;
 	pthread_mutex_lock(&coder->config->print_lock);
 
-	printf("%ld coder %d has compiled (compile # %d )\n",mytime(), coder->name, coder->compiles);
+	printf("%ld coder %d has compiled (compile # %d )\n",mytime() - coder->config->start, coder->name, coder->compiles);
 	pthread_mutex_unlock(&coder->config->print_lock);
 	return (NULL);
 }
@@ -27,7 +27,7 @@ static void	lock_sticks(t_person *coder)
 		pthread_mutex_lock(&first->lock);
     //for now using mytime, might have to coordinate with program start
     //time in main later.
-    printf("%ld %d has taken a dongle\n",mytime(), coder->name);
+    printf("%ld %d has taken a dongle\n",mytime()- coder->config->start, coder->name);
 		coder->held_sticks[0] = first;
 		coder->held_count = 1;
 		return ;
@@ -40,11 +40,11 @@ static void	lock_sticks(t_person *coder)
 	pthread_mutex_lock(&first->lock);
     //ADD TIMESTAMP Dongle 1
     //also make sure it prints the coder number here
-    printf("%ld %d has taken a dongle\n",mytime(), coder->name);
+    printf("%ld %d has taken a dongle\n",mytime()- coder->config->start, coder->name);
 	pthread_mutex_lock(&second->lock);
     //ADD TIMESTAMP Dongle 2
     //also make sure it prints the coder number here
-    printf("%ld %d has taken a dongle\n",mytime(), coder->name);
+    printf("%ld %d has taken a dongle\n",mytime()- coder->config->start, coder->name);
 	coder->held_sticks[0] = coder->left_stick;
 	coder->held_sticks[1] = coder->right_stick;
 	coder->held_count = 2;
@@ -70,6 +70,8 @@ void	*coder_routine(void *arg)
 	while (coder->compiles < coder->config->number_of_compiles_required)
 	{
 		lock_sticks(coder);
+
+    //need to FIX this part, doesn't match the definition.
 		compile(coder);
 		unlock_sticks(coder);
 	}

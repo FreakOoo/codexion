@@ -18,7 +18,7 @@
 #include "codexion.h"
 
 
-long main_start;
+config.start = mytime();
 
 
 
