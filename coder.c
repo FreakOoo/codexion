@@ -22,8 +22,6 @@ static void	lock_sticks(t_person *coder)
 	if (first == second)
 	{
 		pthread_mutex_lock(&first->lock);
-    //for now using mytime, might have to coordinate with program start
-    //time in main later.
     printf("%ld %d has taken a dongle\n",mytime()- coder->config->start, coder->name);
 		coder->held_sticks[0] = first;
 		coder->held_count = 1;
@@ -35,12 +33,8 @@ static void	lock_sticks(t_person *coder)
 		second = coder->left_stick;
 	}
 	pthread_mutex_lock(&first->lock);
-    //ADD TIMESTAMP Dongle 1
-    //also make sure it prints the coder number here
     printf("%ld %d has taken a dongle\n",mytime()- coder->config->start, coder->name);
 	pthread_mutex_lock(&second->lock);
-    //ADD TIMESTAMP Dongle 2
-    //also make sure it prints the coder number here
     printf("%ld %d has taken a dongle\n",mytime()- coder->config->start, coder->name);
 	coder->held_sticks[0] = coder->left_stick;
 	coder->held_sticks[1] = coder->right_stick;
@@ -56,9 +50,7 @@ static void	unlock_sticks(t_person *coder)
 	coder->held_sticks[1] = NULL;
 	coder->held_count = 0;
 }
-//
-//
-//fake ass function to be done later
+
 void	*coder_routine(void *arg)
 {
 	t_person	*coder;
@@ -67,8 +59,6 @@ void	*coder_routine(void *arg)
 	while (coder->compiles < coder->config->number_of_compiles_required)
 	{
 		lock_sticks(coder);
-
-    //need to FIX this part, doesn't match the definition.
 		compile(coder);
 		unlock_sticks(coder);
 	}

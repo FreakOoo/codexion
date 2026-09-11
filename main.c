@@ -1,9 +1,3 @@
-//WARNING, if user stalls while inputting fields
-//that goes towards the timer, maybe i need to start it elsewhere
-
-// first I have the structs, then I need them to interact
-//
-//
 // config is read from stdin as KEY=VALUE lines, one per word, e.g.:
 //   NOC=100
 //   TTB=800
@@ -12,17 +6,11 @@
 // keys: NOC TTB TTC TTD TTR COMPILES DONGLE_COOLDOWN SCHEDULER
 // (see codexion.h for what each one means)
 
-// TO-DO:
-// value validation (reject negatives etc.)
-// debug / refactor phases, burnout timer, monitor thread, scheduler
-//
-//need a dedicated monitor thread to check mfkn deadlines
+// TODO: value validation (reject negatives etc.), debug/refactor phases,
+// burnout timer, monitor thread, scheduler
 
 #include "codexion.h"
 
-// I NEED TO MOVE ALL THIS SHIT OUT OF MAIN
-//
-//
 static void	init_sticks(t_stick *sticks, int n)
 {
 	int	i;
@@ -108,7 +96,7 @@ static void	set_field3(char *field, char *equal, int *cooldown, int *scheduler)
 }
 
 // reads KEY=VALUE lines from stdin until EOF, updating whichever
-// variable ma:%s/\<field\>/field/g | %s/\<equal\>/equal/gtches; keys that never appear keep their default value
+// variable matches; keys that never appear keep their default value
 static void	read_config(int *n, int *ttb, int *ttc, int *ttd, int *ttr,
 		int *compiles, int *cooldown, int *scheduler)
 {
@@ -192,6 +180,3 @@ int	main(void)
 	pthread_mutex_destroy(&config.print_lock);
 	return (0);
 }
-
-// next step: loop compile -> debug -> refactor per coder instead of a
-// single compile() pass, plus the burnout monitor thread and scheduler.

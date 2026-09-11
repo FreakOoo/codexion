@@ -1,12 +1,7 @@
 #ifndef CODEXION_H
 # define CODEXION_H
 
-
-//Currently the most important thing is implementing timers
-//
-
-// For unspecified values, chosen kinda randomly
-// adjust values if sensible
+// default values below are unspecified by the subject; adjust if needed
 
 // NOC number of coders; TTB time do burnout etc.
 #define DEFAULT_NOC 100
@@ -30,9 +25,6 @@
 // individually compile before stopping, and the lock guarding stdout so
 // two coders printing at once don't garble each other
 
-//check this config sghit it's weird
-
-//tv stands for timevalue
 long mytime(void);
 
 typedef struct s_config
