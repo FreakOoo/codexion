@@ -1,5 +1,3 @@
-// all timestamps are milliseconds since coder->config->start, which main()
-// sets once (config.start = mytime()) before spawning any thread.
 
 #include "codexion.h"
 

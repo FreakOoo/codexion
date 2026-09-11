@@ -56,7 +56,7 @@ static void	init_coders(t_person *coders, t_stick *sticks,
 		coders[i].config = config;
 		pthread_mutex_init(&coders[i].lock, NULL);
 		i++;
-	}
+	} 
 }
 
 static void	cleanup(t_stick *sticks, t_person *coders,
@@ -150,7 +150,6 @@ int	main(void)
 	pthread_t	*threads;
 	int			i;
 
-	config.start = mytime();
 	n = DEFAULT_NOC;
 	time_to_burnout = DEFAULT_TTB;
 	time_to_compile = DEFAULT_TTC;
@@ -178,6 +177,7 @@ int	main(void)
 	threads = malloc(sizeof(pthread_t) * n);
 	init_sticks(sticks, n);
 	init_coders(coders, sticks, &config, n);
+	config.start = mytime();
 	i = 0;
 	while (i < n)
 	{
