@@ -20,8 +20,13 @@ void* monitor(char * coders)
       //use that to see if we hit deadline
       //
       //if past deadline, print death message
+      //
+      //also need to lock coders to avoid race condition
+      //reading monitor without lock causes a race condition
     }
     //stuff here 
+    //
+    //sleep needs to be finer
     sleep(1);
   }
 
