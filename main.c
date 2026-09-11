@@ -17,11 +17,6 @@
 
 #include "codexion.h"
 
-
-config.start = mytime();
-
-
-
 // I NEED TO MOVE ALL THIS SHIT OUT OF MAIN
 //
 //
@@ -139,8 +134,6 @@ static void	read_config(int *n, int *ttb, int *ttc, int *ttd, int *ttr,
 
 int	main(void)
 {
-  main_start = mytime();
-
 	int			n;
 	int			time_to_burnout;
 	int			time_to_compile;
@@ -154,6 +147,7 @@ int	main(void)
 	pthread_t	*threads;
 	int			i;
 
+	config.start = mytime();
 	n = DEFAULT_NOC;
 	time_to_burnout = DEFAULT_TTB;
 	time_to_compile = DEFAULT_TTC;

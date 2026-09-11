@@ -1,16 +1,15 @@
-//NEED TO USE START not mytime, mytime -start even
-//need to do some debugging to see where it's actually pulling time from
-
+// all timestamps are milliseconds since coder->config->start, which main()
+// sets once (config.start = mytime()) before spawning any thread.
 
 #include "codexion.h"
 
-void	*compile(t_person * coder)
+void	*compile(t_person *coder)
 {
 	coder->compiles++;
-  coder-> last_compile = mytime() - coder->config->start;
+	coder->last_compile = mytime() - coder->config->start;
 	pthread_mutex_lock(&coder->config->print_lock);
-
-	printf("%ld coder %d has compiled (compile # %d )\n",mytime() - coder->config->start, coder->name, coder->compiles);
+	printf("%ld coder %d has compiled (compile # %d )\n",
+		mytime() - coder->config->start, coder->name, coder->compiles);
 	pthread_mutex_unlock(&coder->config->print_lock);
 	return (NULL);
 }

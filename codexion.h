@@ -62,6 +62,6 @@ typedef struct s_person
 }	t_person;
 
 void	*coder_routine(void *arg);
-void	*compile(t_person * coder);
+void	*compile(t_person *coder);
 
 #endif
