@@ -1,7 +1,10 @@
+//WARNING, if user stalls while inputting fields
+//that goes towards the timer, maybe i need to start it elsewhere
+
 // first I have the structs, then I need them to interact
 //
 //
-// config is read from stdin as KEY=VALUE lines, one per line, e.g.:
+// config is read from stdin as KEY=VALUE lines, one per word, e.g.:
 //   NOC=100
 //   TTB=800
 // any key left unspecified keeps its DEFAULT_* value from codexion.h
@@ -73,63 +76,63 @@ static void	cleanup(t_stick *sticks, t_person *coders,
 	free(threads);
 }
 
-// checks the part of the line before '=' against each known key and,
+// checks the part of the word before '=' against each known key and,
 // on a match, stores the part after '=' into that key's variable
-static void	set_field(char *line, char *eq, int *n, int *ttb, int *ttc)
+static void	set_field(char *field, char *equal, int *n, int *ttb, int *ttc)
 {
-	if (!strcmp(line, "NOC"))
-		*n = atoi(eq + 1);
-	else if (!strcmp(line, "TTB"))
-		*ttb = atoi(eq + 1);
-	else if (!strcmp(line, "TTC"))
-		*ttc = atoi(eq + 1);
+	if (!strcmp(field, "NOC"))
+		*n = atoi(equal + 1);
+	else if (!strcmp(field, "TTB"))
+		*ttb = atoi(equal + 1);
+	else if (!strcmp(field, "TTC"))
+		*ttc = atoi(equal + 1);
 }
 
-static void	set_field2(char *line, char *eq, int *ttd, int *ttr,
+static void	set_field2(char *field, char *equal, int *ttd, int *ttr,
 		int *compiles)
 {
-	if (!strcmp(line, "TTD"))
-		*ttd = atoi(eq + 1);
-	else if (!strcmp(line, "TTR"))
-		*ttr = atoi(eq + 1);
-	else if (!strcmp(line, "COMPILES"))
-		*compiles = atoi(eq + 1);
+	if (!strcmp(field, "TTD"))
+		*ttd = atoi(equal + 1);
+	else if (!strcmp(field, "TTR"))
+		*ttr = atoi(equal + 1);
+	else if (!strcmp(field, "COMPILES"))
+		*compiles = atoi(equal + 1);
 }
 
-static void	set_field3(char *line, char *eq, int *cooldown, int *scheduler)
+static void	set_field3(char *field, char *equal, int *cooldown, int *scheduler)
 {
-	if (!strcmp(line, "DONGLE_COOLDOWN"))
-		*cooldown = atoi(eq + 1);
-	else if (!strcmp(line, "SCHEDULER"))
-		*scheduler = atoi(eq + 1);
+	if (!strcmp(field, "DONGLE_COOLDOWN"))
+		*cooldown = atoi(equal + 1);
+	else if (!strcmp(field, "SCHEDULER"))
+		*scheduler = atoi(equal + 1);
 }
 
 // reads KEY=VALUE lines from stdin until EOF, updating whichever
-// variable matches; keys that never appear keep their default value
+// variable ma:%s/\<field\>/field/g | %s/\<equal\>/equal/gtches; keys that never appear keep their default value
 static void	read_config(int *n, int *ttb, int *ttc, int *ttd, int *ttr,
 		int *compiles, int *cooldown, int *scheduler)
 {
-	char	*line;
+	char	*field;
 	size_t	cap;
 	ssize_t	len;
-	char	*eq;
+	char	*equal;
 
-	line = NULL;
+	field = NULL;
 	cap = 0;
-	while ((len = getline(&line, &cap, stdin)) != -1)
+	while ((len = getline(&field, &cap, stdin)) != -1)
 	{
-		if (len > 0 && line[len - 1] == '\n')
-			line[len - 1] = '\0';
-		eq = strchr(line, '=');
-		if (eq)
+		if (len > 0 && field[len - 1] == '\n')
+			field[len - 1] = '\0';
+		equal = strchr(field, '=');
+		if (equal)
 		{
-			*eq = '\0';
-			set_field(line, eq, n, ttb, ttc);
-			set_field2(line, eq, ttd, ttr, compiles);
-			set_field3(line, eq, cooldown, scheduler);
+			*equal = '\0';
+			set_field(field, equal, n, ttb, ttc);
+			set_field2(field, equal, ttd, ttr, compiles);
+			set_field3(field, equal, cooldown, scheduler);
 		}
 	}
-	free(line);
+	free(field);
 }
 
 int	main(void)
