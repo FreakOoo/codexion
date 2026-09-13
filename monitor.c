@@ -1,31 +1,60 @@
 #include "codexion.h"
 
-void* monitor(t_person * coders,int NOC, int TTB)
+static int	is_burnt_out(t_person *coder, int ttb)
 {
-  int live;
-  live = 1;
+	long	elapsed;
 
-  while(live)
-  {
-    while(coders->name <= NOC)
-    {
-      //ai'm locking wrong, idea is right, thought need to pass NOC in.
-      pthread_mutex_lock(coders->name);
-      //lock
-      t_person guy = coders[i];
-      if(guy->last_compile >= TTB)
-      {
-        printf("coder %d is burnt out", coder->name);
-        exit(1);
-      }
-      //read last compile
-      //use that to see if we hit deadline
-      //if past deadline, print death message
-      //also need to lock coders to avoid race condition
-      //reading monitor without lock causes a race condition
-    }
-    //sleep needs to be finer
-    sleep(0.1);
-  }
+	pthread_mutex_lock(&coder->lock);
+	elapsed = (mytime() - coder->config->start) - coder->last_compile;
+	pthread_mutex_unlock(&coder->lock);
+	return (elapsed >= ttb);
+}
 
+static int	all_done(t_person *coders, int noc)
+{
+	int	i;
+	int	done;
+
+	i = 0;
+	while (i < noc)
+	{
+		pthread_mutex_lock(&coders[i].lock);
+		done = (coders[i].compiles >= coders[i].config->number_of_compiles_required);
+		pthread_mutex_unlock(&coders[i].lock);
+		if (!done)
+			return (0);
+		i++;
+	}
+	return (1);
+}
+
+static void	report_burnout(t_person *coder)
+{
+	pthread_mutex_lock(&coder->config->print_lock);
+	printf("%ld coder %d is burnt out\n",
+		mytime() - coder->config->start, coder->name);
+	pthread_mutex_unlock(&coder->config->print_lock);
+	exit(1);
+}
+
+void	*monitor(void *arg)
+{
+	t_person	*coders;
+	int			noc;
+	int			i;
+
+	coders = (t_person *)arg;
+	noc = coders->config->number_of_coders;
+	while (!all_done(coders, noc))
+	{
+		i = 0;
+		while (i < noc)
+		{
+			if (is_burnt_out(&coders[i], coders->config->time_to_burnout))
+				report_burnout(&coders[i]);
+			i++;
+		}
+		usleep(1000);
+	}
+	return (NULL);
 }

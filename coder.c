@@ -3,8 +3,10 @@
 
 void	*compile(t_person *coder)
 {
+	pthread_mutex_lock(&coder->lock);
 	coder->compiles++;
 	coder->last_compile = mytime() - coder->config->start;
+	pthread_mutex_unlock(&coder->lock);
 	pthread_mutex_lock(&coder->config->print_lock);
 	printf("%ld coder %d has compiled (compile # %d )\n",
 		mytime() - coder->config->start, coder->name, coder->compiles);

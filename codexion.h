@@ -29,9 +29,11 @@ long mytime(void);
 
 typedef struct s_config
 {
+	int				number_of_coders;
 	int				number_of_compiles_required;
+	int				time_to_burnout;
 	pthread_mutex_t	print_lock;
-  long start;
+	long			start;
 }	t_config;
 typedef struct s_stick
 {
@@ -55,5 +57,6 @@ typedef struct s_person
 
 void	*coder_routine(void *arg);
 void	*compile(t_person *coder);
+void	*monitor(void *arg);
 
 #endif

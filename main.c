@@ -136,6 +136,7 @@ int	main(void)
 	t_stick		*sticks;
 	t_person	*coders;
 	pthread_t	*threads;
+	pthread_t	monitor_thread;
 	int			i;
 
 	n = DEFAULT_NOC;
@@ -151,10 +152,11 @@ int	main(void)
 		&dongle_cooldown, &scheduler);
 	if (n <= 0)
 		return (EXIT_FAILURE);
+	config.number_of_coders = n;
+	config.time_to_burnout = time_to_burnout;
 	pthread_mutex_init(&config.print_lock, NULL);
 	// TO-DO: wire the rest of these into t_person / t_stick once the
-	// debug, refactor and burnout phases exist; not read anywhere yet.
-	(void)time_to_burnout;
+	// debug and refactor phases exist; not read anywhere yet.
 	(void)time_to_compile;
 	(void)time_to_debug;
 	(void)time_to_refactor;
@@ -173,9 +175,12 @@ int	main(void)
 			return (EXIT_FAILURE);
 		i++;
 	}
+	if (pthread_create(&monitor_thread, NULL, monitor, coders))
+		return (EXIT_FAILURE);
 	i = 0;
 	while (i < n)
 		pthread_join(threads[i++], NULL);
+	pthread_join(monitor_thread, NULL);
 	cleanup(sticks, coders, threads, n);
 	pthread_mutex_destroy(&config.print_lock);
 	return (0);
