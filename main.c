@@ -95,6 +95,19 @@ static void	set_field3(char *field, char *equal, int *cooldown, int *scheduler)
 		*scheduler = atoi(equal + 1);
 }
 
+static void	print_prompt(void)
+{
+	printf("you can select the following values as KEY=VALUE lines, ");
+	printf("one per line:\n");
+	printf("  NOC TTB TTC TTD TTR COMPILES DONGLE_COOLDOWN SCHEDULER\n\n");
+	printf("or press ctrl-D right away for the defaults from"
+		"codexion.h:\n");
+	printf("  NOC=%d TTB=%d TTC=%d TTD=%d TTR=%d\n",
+		DEFAULT_NOC, DEFAULT_TTB, DEFAULT_TTC, DEFAULT_TTD, DEFAULT_TTR);
+	printf("  COMPILES=%d DONGLE_COOLDOWN=%d SCHEDULER=%d\n",
+		DEFAULT_COMPILES, DEFAULT_DONGLE_COOLDOWN, DEFAULT_SCHEDULER);
+}
+
 // reads KEY=VALUE lines from stdin until EOF, updating whichever
 // variable matches; keys that never appear keep their default value
 static void	read_config(int *n, int *ttb, int *ttc, int *ttd, int *ttr,
@@ -147,6 +160,7 @@ int	main(void)
 	config.number_of_compiles_required = DEFAULT_COMPILES;
 	dongle_cooldown = DEFAULT_DONGLE_COOLDOWN;
 	scheduler = DEFAULT_SCHEDULER;
+	print_prompt();
 	read_config(&n, &time_to_burnout, &time_to_compile, &time_to_debug,
 		&time_to_refactor, &config.number_of_compiles_required,
 		&dongle_cooldown, &scheduler);
