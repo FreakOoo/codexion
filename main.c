@@ -97,11 +97,11 @@ static void	set_field3(char *field, char *equal, int *cooldown, int *scheduler)
 
 static void	print_prompt(void)
 {
-	printf("you can select the following values as KEY=VALUE lines, ");
+	printf("you can select the following values as KEY=VALUE, ");
 	printf("one per line:\n");
 	printf("  NOC TTB TTC TTD TTR COMPILES DONGLE_COOLDOWN SCHEDULER\n\n");
-	printf("or press ctrl-D right away for the defaults from"
-		"codexion.h:\n");
+	printf("or press ctrl for the defaults from"
+		" codexion.h:\n");
 	printf("  NOC=%d TTB=%d TTC=%d TTD=%d TTR=%d\n",
 		DEFAULT_NOC, DEFAULT_TTB, DEFAULT_TTC, DEFAULT_TTD, DEFAULT_TTR);
 	printf("  COMPILES=%d DONGLE_COOLDOWN=%d SCHEDULER=%d\n",

@@ -4,6 +4,11 @@
 void	*compile(t_person *coder)
 {
 	pthread_mutex_lock(&coder->lock);
+  
+  //the addition of the line below made the program
+  //only print that users have taken dongles
+  //prob just need to scale the sleep time, hopefully it's that simple
+  sleep(coder->config->time_to_compile);
 	coder->compiles++;
 	coder->last_compile = mytime() - coder->config->start;
 	pthread_mutex_unlock(&coder->lock);
