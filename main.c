@@ -141,7 +141,7 @@ int	main(void)
 	int			n;
 	int			time_to_burnout;
 	int			time_to_compile;
-	int			time_to_debug;
+  int			time_to_debug;
 	int			time_to_refactor;
 	int			dongle_cooldown;
 	int			scheduler;
@@ -167,11 +167,11 @@ int	main(void)
 	if (n <= 0)
 		return (EXIT_FAILURE);
 	config.number_of_coders = n;
+  config.time_to_compile = time_to_compile;
 	config.time_to_burnout = time_to_burnout;
 	pthread_mutex_init(&config.print_lock, NULL);
 	// TO-DO: wire the rest of these into t_person / t_stick once the
 	// debug and refactor phases exist; not read anywhere yet.
-	(void)time_to_compile;
 	(void)time_to_debug;
 	(void)time_to_refactor;
 	(void)dongle_cooldown;
