@@ -61,5 +61,6 @@ typedef struct s_person
 void	*coder_routine(void *arg);
 void	*compile(t_person *coder);
 void	*monitor(void *arg);
+int is_dead(t_config *config);
 
 #endif

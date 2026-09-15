@@ -10,6 +10,7 @@
 // burnout timer, monitor thread, scheduler
 
 #include "codexion.h"
+#include <stdlib.h>
 
 static void	init_sticks(t_stick *sticks, int n)
 {
@@ -169,6 +170,7 @@ int	main(void)
 	config.number_of_coders = n;
   config.time_to_compile = time_to_compile;
 	config.time_to_burnout = time_to_burnout;
+  config.dead = 0;
 	pthread_mutex_init(&config.print_lock, NULL);
 	pthread_mutex_init(&config.dead_lock, NULL);
   // TO-DO: wire the rest of these into t_person / t_stick once the
@@ -197,9 +199,14 @@ int	main(void)
 	while (i < n)
 		pthread_join(threads[i++], NULL);
 	pthread_join(monitor_thread, NULL);
+  i = config.dead;
 	cleanup(sticks, coders, threads, n);
 	pthread_mutex_destroy(&config.print_lock);
 	pthread_mutex_destroy(&config.dead_lock);
   return (0);
+
+  if (i)
+    return(EXIT_FAILURE);
+  return(EXIT_SUCCESS);
 
 }
