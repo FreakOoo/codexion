@@ -203,10 +203,9 @@ int	main(void)
 	cleanup(sticks, coders, threads, n);
 	pthread_mutex_destroy(&config.print_lock);
 	pthread_mutex_destroy(&config.dead_lock);
-  return (0);
 
   if (i)
-    return(EXIT_FAILURE);
-  return(EXIT_SUCCESS);
+    return (EXIT_FAILURE);
+  return (EXIT_SUCCESS);
 
 }
