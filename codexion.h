@@ -34,6 +34,8 @@ typedef struct s_config
 	int				time_to_burnout;
 	pthread_mutex_t	print_lock;
 	long			start;
+  int dead;
+  pthread_mutex_t dead_lock;
   int time_to_compile;
 }	t_config;
 typedef struct s_stick

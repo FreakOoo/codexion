@@ -13,6 +13,7 @@ void	*compile(t_person *coder)
 	coder->last_compile = mytime() - coder->config->start;
 	pthread_mutex_unlock(&coder->lock);
 	pthread_mutex_lock(&coder->config->print_lock);
+  if(!is_dead(coder->config))
 	printf("%ld coder %d has compiled (compile # %d )\n",
 		mytime() - coder->config->start, coder->name, coder->compiles);
 	pthread_mutex_unlock(&coder->config->print_lock);

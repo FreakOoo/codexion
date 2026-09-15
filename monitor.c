@@ -1,4 +1,5 @@
 #include "codexion.h"
+#include <pthread.h>
 
 static int	is_burnt_out(t_person *coder, int ttb)
 {
@@ -30,11 +31,20 @@ static int	all_done(t_person *coders, int noc)
 
 static void	report_burnout(t_person *coder)
 {
+  int alr_dead;
+
+  pthread_mutex_lock(&coder->config->dead_lock);
+  alr_dead = coder->config->dead;
+  coder->config->dead = 1;
+  pthread_mutex_unlock(&coder->config->dead_lock);
+  if(alr_dead)
+    return;
+
+
 	pthread_mutex_lock(&coder->config->print_lock);
 	printf("%ld coder %d is burnt out\n",
 		mytime() - coder->config->start, coder->name);
 	pthread_mutex_unlock(&coder->config->print_lock);
-	exit(1);
 }
 
 void	*monitor(void *arg)

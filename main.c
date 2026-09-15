@@ -170,8 +170,10 @@ int	main(void)
   config.time_to_compile = time_to_compile;
 	config.time_to_burnout = time_to_burnout;
 	pthread_mutex_init(&config.print_lock, NULL);
-	// TO-DO: wire the rest of these into t_person / t_stick once the
+	pthread_mutex_init(&config.dead_lock, NULL);
+  // TO-DO: wire the rest of these into t_person / t_stick once the
 	// debug and refactor phases exist; not read anywhere yet.
+
 	(void)time_to_debug;
 	(void)time_to_refactor;
 	(void)dongle_cooldown;
@@ -197,5 +199,7 @@ int	main(void)
 	pthread_join(monitor_thread, NULL);
 	cleanup(sticks, coders, threads, n);
 	pthread_mutex_destroy(&config.print_lock);
-	return (0);
+	pthread_mutex_destroy(&config.dead_lock);
+  return (0);
+
 }
