@@ -55,10 +55,10 @@ void	*monitor(void *arg)
 
 	coders = (t_person *)arg;
 	noc = coders->config->number_of_coders;
-	while (!all_done(coders, noc))
+	while (!is_dead(coders->config) && !all_done(coders, noc))
 	{
 		i = 0;
-		while (i < noc)
+		while (i < noc && !is_dead(coders->config))
 		{
 			if (is_burnt_out(&coders[i], coders->config->time_to_burnout))
 				report_burnout(&coders[i]);

@@ -1,0 +1,30 @@
+TLDR - codexion (2026-09-15)
+
+DONE
+- Compile delay (TTC) is simulated via usleep() in compile() - the
+  original todo.txt item 1 is stale, this is resolved.
+- Burnout -> program-wide death flag (config.dead) implemented and
+  fixed: coders no longer grab a dongle or finish a compile after
+  another coder has burnt out. Fixed by:
+    * separate config.dead_lock mutex (was piggybacking on print_lock)
+    * lock_sticks() now uses trylock-in-a-loop + is_dead() checks
+      instead of a blocking pthread_mutex_lock, so a coder waiting on
+      a contended dongle bails out fast instead of blocking forever
+    * compile()'s sleep is chunked (1ms steps) with an is_dead() check
+      between chunks, so a coder mid-compile also drops out fast
+      instead of sleeping out the full TTC
+
+NEXT (rough priority order)
+1. Debug phase (TTD) - read from stdin, cast to (void), never used.
+2. Refactor phase (TTR) - same story as TTD.
+3. Dongle cooldown (DONGLE_COOLDOWN) - t_stick.last_use_timer exists
+   but is only ever initialized to 0, never read/updated.
+4. Scheduler - scheduler.c is an empty stub and isn't even in the
+   Makefile's SRCS, so it's not compiled right now.
+5. Input validation - only NOC<=0 is checked. Negative/zero
+   TTB/TTC/TTD/TTR/COMPILES/DONGLE_COOLDOWN are accepted silently.
+6. held_sticks[2]/held_count on t_person - written in
+   lock_sticks/unlock_sticks, never read anywhere. Decide if
+   something should consume them (debug output?) or drop them.
+
+See todo.txt for the original longer write-up.
