@@ -4,15 +4,14 @@
 // default values below are unspecified by the subject; adjust if needed
 
 // NOC number of coders; TTB time do burnout etc.
-#define DEFAULT_NOC 100
-#define DEFAULT_TTB 800
-#define DEFAULT_TTC 200
-#define DEFAULT_TTD  200
-#define DEFAULT_TTR  200
-#define DEFAULT_COMPILES  3
-#define DEFAULT_DONGLE_COOLDOWN 100
-#define DEFAULT_SCHEDULER 0
-
+# define DEFAULT_NOC 100
+# define DEFAULT_TTB 800
+# define DEFAULT_TTC 200
+# define DEFAULT_TTD 200
+# define DEFAULT_TTR 200
+# define DEFAULT_COMPILES 3
+# define DEFAULT_DONGLE_COOLDOWN 100
+# define DEFAULT_SCHEDULER 0
 
 # include <pthread.h>
 # include <stdio.h>
@@ -24,20 +23,22 @@
 // shared, read-only once threads start: how many times each coder must
 // individually compile before stopping, and the lock guarding stdout so
 // two coders printing at once don't garble each other
-
-long mytime(void);
-
 typedef struct s_config
 {
 	int				number_of_coders;
 	int				number_of_compiles_required;
 	int				time_to_burnout;
-	pthread_mutex_t	print_lock;
+	int				time_to_compile;
+	int				time_to_debug;
+	int				time_to_refactor;
+	int				dongle_cooldown;
+	int				scheduler;
+	int				dead;
 	long			start;
-  int dead;
-  pthread_mutex_t dead_lock;
-  int time_to_compile;
+	pthread_mutex_t	print_lock;
+	pthread_mutex_t	dead_lock;
 }	t_config;
+
 typedef struct s_stick
 {
 	int				available;
@@ -58,9 +59,32 @@ typedef struct s_person
 	pthread_mutex_t	lock;
 }	t_person;
 
+typedef struct s_world
+{
+	t_stick		*sticks;
+	t_person	*coders;
+	pthread_t	*threads;
+	pthread_t	monitor_thread;
+}	t_world;
+
+long	mytime(void);
+int		is_dead(t_config *config);
+
+void	print_prompt(void);
+void	read_config(t_config *config);
+
+int		setup_world(t_world *world, t_config *config);
+void	cleanup(t_world *world, int n);
+
+int		start_threads(t_config *config, t_world *world);
+void	join_threads(t_world *world, int n);
+
 void	*coder_routine(void *arg);
 void	*compile(t_person *coder);
+void	unlock_sticks(t_person *coder);
+
+int		lock_sticks(t_person *coder);
+
 void	*monitor(void *arg);
-int is_dead(t_config *config);
 
 #endif

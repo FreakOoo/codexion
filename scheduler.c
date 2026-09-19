@@ -1,4 +1,7 @@
-void *scheduler(void *)
+#include "codexion.h"
+
+void	*scheduler(void *arg)
 {
-  pthread_t *scheduler_thread;
+	(void)arg;
+	return (NULL);
 }
