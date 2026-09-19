@@ -40,7 +40,15 @@ void	*compile(t_person *coder)
 	pthread_mutex_unlock(&coder->config->print_lock);
 	return (NULL);
 }
+void *debug(t_person *coder)
+{
+//fill this shit in bozo  
+}
 
+void *refactor(t_person *coder)
+{
+//fill this shit in bozo  
+}
 void	unlock_sticks(t_person *coder)
 {
 	pthread_mutex_unlock(&coder->left_stick->lock);

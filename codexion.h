@@ -81,6 +81,8 @@ void	join_threads(t_world *world, int n);
 
 void	*coder_routine(void *arg);
 void	*compile(t_person *coder);
+void *debug(t_person *coder);
+void *refactor(t_person *coder);
 void	unlock_sticks(t_person *coder);
 
 int		lock_sticks(t_person *coder);
