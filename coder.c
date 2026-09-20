@@ -106,6 +106,8 @@ void	*coder_routine(void *arg)
 			break ;
 		compile(coder);
 		unlock_sticks(coder);
+    debug(coder);
+    refactor(coder);
 	}
 	return (NULL);
 }
