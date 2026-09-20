@@ -42,11 +42,46 @@ void	*compile(t_person *coder)
 }
 void *debug(t_person *coder)
 {
+  pthread_mutex_lock(&coder->lock);
+  busy_sleep(coder->config);
+  //also need to specify how long to busy sleep
+  if (is_dead(coder->config))
+  {
+    pthread_mutex_unlock(&coder->lock);
+    return  (NULL);
+    //this still needs to implement the compile to bebug to refactor pipeline
+  }
+  pthread_mutex_unlock(&coder->lock);
+  pthread_mutex_lock(&coder->config->print_lock);
+  if(!is_dead(coder->config))
+  {
+    printf("%ld coder %d is debugging\n", mytime() - coder->config->start, coder->name);
+  }
+  pthread_mutex_unlock(&coder->config->print_lock);
+  return (NULL);
 //fill this shit in bozo  
 }
 
 void *refactor(t_person *coder)
 {
+pthread_mutex_lock(&coder->lock);
+  busy_sleep(coder->config);
+  //also need to specify how long to busy sleep
+  if (is_dead(coder->config))
+  {
+    pthread_mutex_unlock(&coder->lock);
+    return  (NULL);
+    //this still needs to implement the compile to bebug to refactor pipeline
+  }
+  pthread_mutex_unlock(&coder->lock);
+  pthread_mutex_lock(&coder->config->print_lock);
+  if(!is_dead(coder->config))
+  {
+    printf("%ld coder %d is refactoring\n", mytime() - coder->config->start, coder->name);
+  }
+  pthread_mutex_unlock(&coder->config->print_lock);
+  return (NULL);
+
 //fill this shit in bozo  
 }
 void	unlock_sticks(t_person *coder)
