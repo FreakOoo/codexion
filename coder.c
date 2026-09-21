@@ -5,6 +5,9 @@
 // burnout instead of sleeping out the full duration regardless
 static void	busy_sleep(t_config *config)
 {
+
+  //this is the bug, I base sleep time on TTC but need to make it modular
+  //for TTC, TTB, and TTR
 	long	leftover;
 	long	step;
 
