@@ -34,6 +34,7 @@ typedef struct s_config
 	int				dongle_cooldown;
 	int				scheduler;
 	int				dead;
+  int       finished;
 	long			start;
 	pthread_mutex_t	print_lock;
 	pthread_mutex_t	dead_lock;
@@ -69,7 +70,7 @@ typedef struct s_world
 
 long	mytime(void);
 int		is_dead(t_config *config);
-
+int   is_finished(t_config *config);
 void	print_prompt(void);
 void	read_config(t_config *config);
 
