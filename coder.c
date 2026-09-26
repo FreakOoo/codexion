@@ -37,7 +37,7 @@ void	*compile(t_person *coder)
 	pthread_mutex_lock(&coder->config->print_lock);
 	if (!is_dead(coder->config))
 	{
-		printf("%ld coder %d has compiled (compile # %d )\n",
+		printf("%ldms coder %d has compiled (compile # %d )\n",
 			mytime() - coder->config->start, coder->name, coder->compiles);
 	}
 	pthread_mutex_unlock(&coder->config->print_lock);
@@ -58,7 +58,7 @@ void *debug(t_person *coder)
   pthread_mutex_lock(&coder->config->print_lock);
   if(!is_dead(coder->config))
   {
-    printf("%ld coder %d is debugging\n", mytime() - coder->config->start, coder->name);
+    printf("%ldms coder %d is debugging\n", mytime() - coder->config->start, coder->name);
   }
   pthread_mutex_unlock(&coder->config->print_lock);
   return (NULL);
@@ -80,7 +80,7 @@ pthread_mutex_lock(&coder->lock);
   pthread_mutex_lock(&coder->config->print_lock);
   if(!is_dead(coder->config))
   {
-    printf("%ld coder %d is refactoring\n", mytime() - coder->config->start, coder->name);
+    printf("%ldms coder %d is refactoring\n", mytime() - coder->config->start, coder->name);
   }
   pthread_mutex_unlock(&coder->config->print_lock);
   return (NULL);

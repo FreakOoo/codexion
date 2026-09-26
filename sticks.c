@@ -5,7 +5,7 @@ static void	print_dongle(t_person *coder)
 	pthread_mutex_lock(&coder->config->print_lock);
 	if (!is_dead(coder->config))
 	{
-		printf("%ld %d has taken a dongle\n",
+		printf("%ldms %d has taken a dongle\n",
 			mytime() - coder->config->start, coder->name);
 	}
 	pthread_mutex_unlock(&coder->config->print_lock);
