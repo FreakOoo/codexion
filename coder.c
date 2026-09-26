@@ -3,7 +3,7 @@
 // sleeps out time_to_compile in small chunks, rechecking the death flag
 // between each one so an in-progress compile aborts within ~1ms of a
 // burnout instead of sleeping out the full duration regardless
-static void	busy_sleep(t_config *config, char * action)
+static void	busy_sleep(t_config *config, int *action)
 {
 
   //this is the bug, I base sleep time on TTC but need to make it modular
@@ -11,7 +11,7 @@ static void	busy_sleep(t_config *config, char * action)
 	long	leftover;
 	long	step;
 
-	leftover = (long)config->action * 1000;
+	leftover = (long)*action * 1000;
 	while (leftover > 0 && !is_dead(config))
 	{
 		step = 1000;
@@ -25,7 +25,7 @@ static void	busy_sleep(t_config *config, char * action)
 void	*compile(t_person *coder)
 {
 	pthread_mutex_lock(&coder->lock);
-	busy_sleep(coder->config, coder->config->time_to_compile);
+	busy_sleep(coder->config, &coder->config->time_to_compile);
 	if (is_dead(coder->config))
 	{
 		pthread_mutex_unlock(&coder->lock);
@@ -46,7 +46,7 @@ void	*compile(t_person *coder)
 void *debug(t_person *coder)
 {
   pthread_mutex_lock(&coder->lock);
-  busy_sleep(coder->config,coder->config->time_to_debug);
+  busy_sleep(coder->config,&coder->config->time_to_debug);
   //also need to specify how long to busy sleep
   if (is_dead(coder->config))
   {
@@ -68,7 +68,7 @@ void *debug(t_person *coder)
 void *refactor(t_person *coder)
 {
 pthread_mutex_lock(&coder->lock);
-  busy_sleep(coder->config,coder->config->time_to_refactor);
+  busy_sleep(coder->config,&coder->config->time_to_refactor);
   //also need to specify how long to busy sleep
   if (is_dead(coder->config))
   {
