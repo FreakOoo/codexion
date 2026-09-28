@@ -63,7 +63,7 @@ static void	report_success(t_person *coder)
 	if (already_dead)
 		return ;
 	pthread_mutex_lock(&coder->config->print_lock);
-	printf("%ld all %d coders have compiled %d times\n",
+	printf("%ld *SUCCESS*  all %d coders have compiled %d times\n",
 		mytime() - coder->config->start, coder->config->number_of_coders,
 		coder->config->number_of_compiles_required);
 	pthread_mutex_unlock(&coder->config->print_lock);
