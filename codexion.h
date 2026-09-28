@@ -68,6 +68,7 @@ long	mytime(void);
 int		is_dead(t_config *config);
 void	print_prompt(void);
 void	read_config(t_config *config);
+int		validate_config(t_config *config);
 
 int		setup_world(t_world *world, t_config *config);
 void	cleanup(t_world *world, int n);

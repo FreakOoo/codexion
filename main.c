@@ -38,8 +38,11 @@ int	main(void)
 
 	print_prompt();
 	read_config(&config);
-	if (config.number_of_coders <= 0)
+	if (!validate_config(&config))
+	{
+		fprintf(stderr, "invalid config\n");
 		return (EXIT_FAILURE);
+	}
 	config.dead = 0;
 	config.finished = 0;
 	pthread_mutex_init(&config.print_lock, NULL);

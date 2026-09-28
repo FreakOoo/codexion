@@ -75,3 +75,22 @@ void	read_config(t_config *config)
 	}
 	free(field);
 }
+
+int	validate_config(t_config *config)
+{
+	if (config->number_of_coders <= 0)
+		return (0);
+	if (config->number_of_compiles_required <= 0)
+		return (0);
+	if (config->time_to_burnout <= 0)
+		return (0);
+	if (config->time_to_compile <= 0)
+		return (0);
+	if (config->time_to_debug <= 0)
+		return (0);
+	if (config->time_to_refactor <= 0)
+		return (0);
+	if (config->dongle_cooldown < 0)
+		return (0);
+	return (1);
+}
