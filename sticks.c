@@ -12,13 +12,22 @@ static void	print_dongle(t_person *coder)
 }
 
 // gives up (returns 0) the moment the death flag flips, instead of
-// staying stuck on a mutex a dead coder may never release
-static int	tlock_or_die(pthread_mutex_t *lock, t_config *config)
+// staying stuck on a mutex a dead coder may never release; a stick that's
+// free but still within its cooldown window is put right back and treated
+// as busy, same as one another coder is holding
+static int	tlock_or_die(t_stick *stick, t_config *config)
 {
+	long	now;
+
 	while (!is_dead(config))
 	{
-		if (pthread_mutex_trylock(lock) == 0)
-			return (1);
+		if (pthread_mutex_trylock(&stick->lock) == 0)
+		{
+			now = mytime() - config->start;
+			if (now - stick->last_use_timer >= config->dongle_cooldown)
+				return (1);
+			pthread_mutex_unlock(&stick->lock);
+		}
 		usleep(200);
 	}
 	return (0);
@@ -26,7 +35,7 @@ static int	tlock_or_die(pthread_mutex_t *lock, t_config *config)
 
 static int	lock_same_stick(t_person *coder, t_stick *first)
 {
-	if (!tlock_or_die(&first->lock, coder->config))
+	if (!tlock_or_die(first, coder->config))
 		return (0);
 	print_dongle(coder);
 	coder->held_sticks[0] = first;
@@ -41,10 +50,10 @@ static int	lock_two_sticks(t_person *coder, t_stick *first, t_stick *second)
 		first = coder->right_stick;
 		second = coder->left_stick;
 	}
-	if (!tlock_or_die(&first->lock, coder->config))
+	if (!tlock_or_die(first, coder->config))
 		return (0);
 	print_dongle(coder);
-	if (!tlock_or_die(&second->lock, coder->config))
+	if (!tlock_or_die(second, coder->config))
 	{
 		pthread_mutex_unlock(&first->lock);
 		return (0);

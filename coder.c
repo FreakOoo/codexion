@@ -78,9 +78,16 @@ pthread_mutex_lock(&coder->lock);
 }
 void	unlock_sticks(t_person *coder)
 {
+	long	now;
+
+	now = mytime() - coder->config->start;
+	coder->left_stick->last_use_timer = now;
 	pthread_mutex_unlock(&coder->left_stick->lock);
 	if (coder->right_stick != coder->left_stick)
+	{
+		coder->right_stick->last_use_timer = now;
 		pthread_mutex_unlock(&coder->right_stick->lock);
+	}
 	coder->held_sticks[0] = NULL;
 	coder->held_sticks[1] = NULL;
 	coder->held_count = 0;

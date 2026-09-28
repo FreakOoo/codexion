@@ -1,6 +1,8 @@
 #include "codexion.h"
 
-static void	init_sticks(t_stick *sticks, int n)
+// last_use_timer starts before any real elapsed time can reach, so the
+// dongle_cooldown check in tlock_or_die never gates a stick's first use
+static void	init_sticks(t_stick *sticks, int n, int dongle_cooldown)
 {
 	int	i;
 
@@ -8,7 +10,7 @@ static void	init_sticks(t_stick *sticks, int n)
 	while (i < n)
 	{
 		sticks[i].available = 1;
-		sticks[i].last_use_timer = 0;
+		sticks[i].last_use_timer = -dongle_cooldown;
 		pthread_mutex_init(&sticks[i].lock, NULL);
 		i++;
 	}
@@ -46,7 +48,7 @@ int	setup_world(t_world *world, t_config *config)
 	world->threads = malloc(sizeof(pthread_t) * n);
 	if (!world->sticks || !world->coders || !world->threads)
 		return (0);
-	init_sticks(world->sticks, n);
+	init_sticks(world->sticks, n, config->dongle_cooldown);
 	init_coders(world->coders, world->sticks, config, n);
 	return (1);
 }
