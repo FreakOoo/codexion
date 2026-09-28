@@ -2,8 +2,6 @@
 # define CODEXION_H
 
 // default values below are unspecified by the subject; adjust if needed
-
-// NOC number of coders; TTB time do burnout etc.
 # define DEFAULT_NOC 100
 # define DEFAULT_TTB 800
 # define DEFAULT_TTC 200
@@ -20,9 +18,6 @@
 # include <string.h>
 # include <sys/time.h>
 
-// shared, read-only once threads start: how many times each coder must
-// individually compile before stopping, and the lock guarding stdout so
-// two coders printing at once don't garble each other
 typedef struct s_config
 {
 	int				number_of_coders;
@@ -34,7 +29,8 @@ typedef struct s_config
 	int				dongle_cooldown;
 	int				scheduler;
 	int				dead;
-  int       finished;
+	// set alongside dead only on success; main() uses it to pick exit code
+	int				finished;
 	long			start;
 	pthread_mutex_t	print_lock;
 	pthread_mutex_t	dead_lock;
@@ -70,7 +66,6 @@ typedef struct s_world
 
 long	mytime(void);
 int		is_dead(t_config *config);
-int   is_finished(t_config *config);
 void	print_prompt(void);
 void	read_config(t_config *config);
 

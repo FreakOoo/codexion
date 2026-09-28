@@ -11,9 +11,8 @@ static void	print_dongle(t_person *coder)
 	pthread_mutex_unlock(&coder->config->print_lock);
 }
 
-// tries to grab a dongle without blocking forever: gives up (returning 0)
-// the moment the death flag flips, instead of staying stuck on a mutex
-// held by a coder who may not release it again anytime soon
+// gives up (returns 0) the moment the death flag flips, instead of
+// staying stuck on a mutex a dead coder may never release
 static int	tlock_or_die(pthread_mutex_t *lock, t_config *config)
 {
 	while (!is_dead(config))

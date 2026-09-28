@@ -13,8 +13,6 @@ void	print_prompt(void)
 		DEFAULT_COMPILES, DEFAULT_DONGLE_COOLDOWN, DEFAULT_SCHEDULER);
 }
 
-// checks the part of the word before '=' against each known key and,
-// on a match, stores the part after '=' into that key's field
 static void	set_field(char *field, char *equal, t_config *config)
 {
 	if (!strcmp(field, "NOC"))
@@ -51,8 +49,6 @@ static void	apply_defaults(t_config *config)
 	config->scheduler = DEFAULT_SCHEDULER;
 }
 
-// reads KEY=VALUE lines from stdin until EOF, updating whichever
-// field matches; keys that never appear keep their default value
 void	read_config(t_config *config)
 {
 	char	*field;

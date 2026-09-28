@@ -1,13 +1,9 @@
 #include "codexion.h"
 
-// sleeps out time_to_compile in small chunks, rechecking the death flag
-// between each one so an in-progress compile aborts within ~1ms of a
-// burnout instead of sleeping out the full duration regardless
+// rechecks the death flag every ~1ms instead of sleeping the full duration
+// in one shot, so an in-progress action aborts quickly on a burnout
 static void	busy_sleep(t_config *config, int *action)
 {
-
-  //this is the bug, I base sleep time on TTC but need to make it modular
-  //for TTC, TTB, and TTR
 	long	leftover;
 	long	step;
 
@@ -47,12 +43,10 @@ void *debug(t_person *coder)
 {
   pthread_mutex_lock(&coder->lock);
   busy_sleep(coder->config,&coder->config->time_to_debug);
-  //also need to specify how long to busy sleep
   if (is_dead(coder->config))
   {
     pthread_mutex_unlock(&coder->lock);
     return  (NULL);
-    //this still needs to implement the compile to bebug to refactor pipeline
   }
   pthread_mutex_unlock(&coder->lock);
   pthread_mutex_lock(&coder->config->print_lock);
@@ -62,19 +56,16 @@ void *debug(t_person *coder)
   }
   pthread_mutex_unlock(&coder->config->print_lock);
   return (NULL);
-//fill this shit in bozo  
 }
 
 void *refactor(t_person *coder)
 {
 pthread_mutex_lock(&coder->lock);
   busy_sleep(coder->config,&coder->config->time_to_refactor);
-  //also need to specify how long to busy sleep
   if (is_dead(coder->config))
   {
     pthread_mutex_unlock(&coder->lock);
     return  (NULL);
-    //this still needs to implement the compile to bebug to refactor pipeline
   }
   pthread_mutex_unlock(&coder->lock);
   pthread_mutex_lock(&coder->config->print_lock);
@@ -84,8 +75,6 @@ pthread_mutex_lock(&coder->lock);
   }
   pthread_mutex_unlock(&coder->config->print_lock);
   return (NULL);
-
-//fill this shit in bozo  
 }
 void	unlock_sticks(t_person *coder)
 {
