@@ -2,6 +2,14 @@
 
 void	*scheduler(void *arg)
 {
-	(void)arg;
-	return (NULL);
+  if(scheduler == EDF)
+  {
+    //edf logic
+  }
+  else if (scheduler == FIFO)
+  {
+    //fifo logic
+  }
+
 }
+

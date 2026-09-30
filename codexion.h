@@ -85,5 +85,5 @@ void	unlock_sticks(t_person *coder);
 int		lock_sticks(t_person *coder);
 
 void	*monitor(void *arg);
-
+void *scheduler(void* arg) //to be modified for the void arg
 #endif
