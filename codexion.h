@@ -64,6 +64,13 @@ typedef struct s_world
 	pthread_t	monitor_thread;
 }	t_world;
 
+typedef struct s_ask_forstick
+{
+  int coder;
+  long key;
+  long permission;
+} t_ask_forstick; 
+
 long	mytime(void);
 int		is_dead(t_config *config);
 void	print_prompt(void);
