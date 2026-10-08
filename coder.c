@@ -21,14 +21,13 @@ static void	busy_sleep(t_config *config, int *action)
 void	*compile(t_person *coder)
 {
 	pthread_mutex_lock(&coder->lock);
+	coder->last_compile = mytime() - coder->config->start;
+	pthread_mutex_unlock(&coder->lock);
 	busy_sleep(coder->config, &coder->config->time_to_compile);
 	if (is_dead(coder->config))
-	{
-		pthread_mutex_unlock(&coder->lock);
 		return (NULL);
-	}
+	pthread_mutex_lock(&coder->lock);
 	coder->compiles++;
-	coder->last_compile = mytime() - coder->config->start;
 	pthread_mutex_unlock(&coder->lock);
 	pthread_mutex_lock(&coder->config->print_lock);
 	if (!is_dead(coder->config))

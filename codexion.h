@@ -36,11 +36,24 @@ typedef struct s_config
 	pthread_mutex_t	dead_lock;
 }	t_config;
 
+typedef struct s_ask_forstick
+{
+	int				coder;
+	long			key;
+	long			permission;
+}	t_ask_forstick;
+
 typedef struct s_stick
 {
 	int				available;
+	int				held;
+	long			available_at;
+	t_ask_forstick	*heap;
+	int				size;
+	long			next_inline;
 	long			last_use_timer;
 	pthread_mutex_t	lock;
+	pthread_cond_t	waiting_room;
 }	t_stick;
 
 typedef struct s_person
@@ -64,12 +77,12 @@ typedef struct s_world
 	pthread_t	monitor_thread;
 }	t_world;
 
-typedef struct s_ask_forstick
-{
-  int coder;
-  long key;
-  long permission;
-} t_ask_forstick; 
+void			heap_push(t_stick *stick, t_ask_forstick req);
+t_ask_forstick	heap_pop(t_stick *stick);
+t_ask_forstick	*heap_peek(t_stick *stick);
+int				heap_less(t_ask_forstick *a, t_ask_forstick *b);
+void			sift_up(t_ask_forstick *heap, int i);
+void			sift_down(t_ask_forstick *heap, int size, int i);
 
 long	mytime(void);
 int		is_dead(t_config *config);
