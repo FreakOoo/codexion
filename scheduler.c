@@ -1,28 +1,22 @@
-#include "codexion.h"
+#include "codexion.h
 
-t_person compare(t_person a, t_person b)
+t_ask_forstick create_request(t_person *coder, t_stick *usb)
 {
-  // need to add a dhoclose to death in config
-  // but this returns coder or next coder
+  //check time to burnout or number in line
+  //give them a yes or no depending on if he's allowed to 
+  //bind with the stick or not.
   //
-  // it should be coder or other coder trying to get the key at the 
-  // same time.
-  if(a->config->time_to_burnout < b->config->time_to_burnout)
-    return a;
+  t_ask_forstick the_ask;
+
+  the_ask.coder = coder->name;
+  the_ask.permission = stick->next_inline;
+  stick->next_inline++;
+
+  if(coder->config->scheduler == FIFO)
+    the_ask.permission = stick->next_inline;
+
   else
-    return b;
-}
-
-void	*scheduler(void *arg)
-{
-  if(scheduler == EDF)
-  {
-    //edf logic
-  }
-  else if (scheduler == FIFO)
-  {
-    //fifo logic
-  }
-
+    the_ask.key = coder->last_compile + coder->config->time_to_burnout;
+  return(the_ask)
 }
 

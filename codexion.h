@@ -10,6 +10,8 @@
 # define DEFAULT_COMPILES 3
 # define DEFAULT_DONGLE_COOLDOWN 100
 # define DEFAULT_SCHEDULER 0
+# define FIFO 0;
+# define EDF 1;
 
 # include <pthread.h>
 # include <stdio.h>
@@ -105,5 +107,6 @@ void	unlock_sticks(t_person *coder);
 int		lock_sticks(t_person *coder);
 
 void	*monitor(void *arg);
-void *scheduler(void* arg); //to be modified for the void arg
+t_ask_forstick create_request(t_person *coder, t_stick *stick);
 #endif
+
