@@ -1,5 +1,6 @@
 #include "codexion.h"
 
+
 static void	print_dongle(t_person *coder)
 {
 	pthread_mutex_lock(&coder->config->print_lock);
@@ -9,28 +10,6 @@ static void	print_dongle(t_person *coder)
 			mytime() - coder->config->start, coder->name);
 	}
 	pthread_mutex_unlock(&coder->config->print_lock);
-}
-
-// gives up (returns 0) the moment the death flag flips, instead of
-// staying stuck on a mutex a dead coder may never release; a stick that's
-// free but still within its cooldown window is put right back and treated
-// as busy, same as one another coder is holding
-static int	tlock_or_die(t_stick *stick, t_config *config)
-{
-	long	now;
-
-	while (!is_dead(config))
-	{
-		if (pthread_mutex_trylock(&stick->lock) == 0)
-		{
-			now = mytime() - config->start;
-			if (now - stick->last_use_timer >= config->dongle_cooldown)
-				return (1);
-			pthread_mutex_unlock(&stick->lock);
-		}
-		usleep(200);
-	}
-	return (0);
 }
 
 static int	lock_same_stick(t_person *coder, t_stick *first)
