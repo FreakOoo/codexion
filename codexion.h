@@ -10,8 +10,8 @@
 # define DEFAULT_COMPILES 3
 # define DEFAULT_DONGLE_COOLDOWN 100
 # define DEFAULT_SCHEDULER 0
-# define FIFO 0;
-# define EDF 1;
+# define FIFO 0
+# define EDF 1
 
 # include <pthread.h>
 # include <stdio.h>

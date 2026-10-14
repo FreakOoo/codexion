@@ -1,6 +1,6 @@
-#include "codexion.h
+#include "codexion.h"
 
-t_ask_forstick create_request(t_person *coder, t_stick *usb)
+t_ask_forstick create_request(t_person *coder, t_stick *stick)
 {
   //check time to burnout or number in line
   //give them a yes or no depending on if he's allowed to 
@@ -13,10 +13,10 @@ t_ask_forstick create_request(t_person *coder, t_stick *usb)
   stick->next_inline++;
 
   if(coder->config->scheduler == FIFO)
-    the_ask.permission = stick->next_inline;
+    the_ask.key = the_ask.permission; 
 
   else
     the_ask.key = coder->last_compile + coder->config->time_to_burnout;
-  return(the_ask)
+  return(the_ask);
 }
 
