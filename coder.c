@@ -1,4 +1,4 @@
-#include "codexion.h"
+rinclude "codexion.h"
 
 // rechecks the death flag every ~1ms instead of sleeping the full duration
 // in one shot, so an in-progress action aborts quickly on a burnout
@@ -103,7 +103,7 @@ void	*coder_routine(void *arg)
 		if (!lock_sticks(coder))
 			break ;
 		compile(coder);
-		unlock_sticks(coder);
+		release(coder);
     debug(coder);
     refactor(coder);
 	}
