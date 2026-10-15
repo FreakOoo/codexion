@@ -1,17 +1,20 @@
 #include "codexion.h"
 
-
-
-void *release(t_stick stick, t_person coder)
+int	acquire(t_stick *stick, t_person *coder)
 {
-// without this coder.c can't run because unlock sticks relies on release now,
-//
+	(void)stick;
+	(void)coder;
+	return (0);
 }
 
-bool myturn(t_person coder, t_stick stick)
+void	release(t_stick *stick)
 {
-
+	(void)stick;
 }
 
-
-
+int	my_turn(t_stick *stick, t_person *coder)
+{
+	(void)stick;
+	(void)coder;
+	return (0);
+}

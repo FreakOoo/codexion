@@ -108,5 +108,9 @@ int		lock_sticks(t_person *coder);
 
 void	*monitor(void *arg);
 t_ask_forstick create_request(t_person *coder, t_stick *stick);
+
+int		acquire(t_stick *stick, t_person *coder);
+void	release(t_stick *stick);
+int		my_turn(t_stick *stick, t_person *coder);
 #endif
 

@@ -1,11 +1,5 @@
 #include "codexion.h"
 
-
-void * acquire(t_stick stick, t_person coder)
-{
-
-}
-
 static void	print_dongle(t_person *coder)
 {
 	pthread_mutex_lock(&coder->config->print_lock);
@@ -19,14 +13,14 @@ static void	print_dongle(t_person *coder)
 
 static int	lock_same_stick(t_person *coder, t_stick *first)
 {
-	if (!acquire(first, coder->config))
+	if (!acquire(first, coder))
 		return (0);
 	print_dongle(coder);
 	coder->held_sticks[0] = first;
 	coder->held_count = 1;
-  while(!(is_burnt_out(coder, ttb)))
-    usleep(1);
-	return (1);
+	while (!is_dead(coder->config))
+		usleep(1000);
+	return (0);
 }
 
 static int	lock_two_sticks(t_person *coder, t_stick *first, t_stick *second)
@@ -36,12 +30,12 @@ static int	lock_two_sticks(t_person *coder, t_stick *first, t_stick *second)
 		first = coder->right_stick;
 		second = coder->left_stick;
 	}
-	if (!acquire(first, coder->config))
+	if (!acquire(first, coder))
 		return (0);
 	print_dongle(coder);
-	if (!acquire(second, coder->config))
+	if (!acquire(second, coder))
 	{
-		pthread_mutex_unlock(&first->lock);
+		release(first);
 		return (0);
 	}
 	print_dongle(coder);
