@@ -1,7 +1,7 @@
-// config is read from stdin as KEY=VALUE lines (NOC=100 etc.); unspecified
-// keys keep their DEFAULT_* value from codexion.h
-
 #include "codexion.h"
+// usage: ./codexion number_of_coders time_to_burnout time_to_compile
+//        time_to_debug time_to_refactor number_of_compiles_required
+//        dongle_cooldown scheduler(fifo|edf)
 
 int	start_threads(t_config *config, t_world *world)
 {
@@ -30,17 +30,18 @@ void	join_threads(t_world *world, int n)
 	pthread_join(world->monitor_thread, NULL);
 }
 
-int	main(void)
+int	main(int argc, char **argv)
 {
 	t_config	config;
 	t_world		world;
 	int			was_finished;
 
-	print_prompt();
-	read_config(&config);
-	if (!validate_config(&config))
+	if (!parse_args(&config, argc, argv))
 	{
-		fprintf(stderr, "invalid config\n");
+		fprintf(stderr, "usage: %s number_of_coders time_to_burnout "
+			"time_to_compile time_to_debug time_to_refactor "
+			"number_of_compiles_required dongle_cooldown "
+			"fifo|edf\n(all values are non-negative integers)\n", argv[0]);
 		return (EXIT_FAILURE);
 	}
 	config.dead = 0;

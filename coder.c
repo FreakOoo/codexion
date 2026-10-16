@@ -1,7 +1,5 @@
 #include "codexion.h"
 
-// rechecks the death flag every ~1ms instead of sleeping the full duration
-// in one shot, so an in-progress action aborts quickly on a burnout
 static void	busy_sleep(t_config *config, int *action)
 {
 	long	leftover;
@@ -23,63 +21,39 @@ void	*compile(t_person *coder)
 	pthread_mutex_lock(&coder->lock);
 	coder->last_compile = mytime() - coder->config->start;
 	pthread_mutex_unlock(&coder->lock);
+	log_state(coder, "is compiling");
 	busy_sleep(coder->config, &coder->config->time_to_compile);
 	if (is_dead(coder->config))
 		return (NULL);
 	pthread_mutex_lock(&coder->lock);
 	coder->compiles++;
 	pthread_mutex_unlock(&coder->lock);
-	pthread_mutex_lock(&coder->config->print_lock);
-	if (!is_dead(coder->config))
-	{
-		printf("%ldms coder %d has compiled (compile # %d )\n",
-			mytime() - coder->config->start, coder->name, coder->compiles);
-	}
-	pthread_mutex_unlock(&coder->config->print_lock);
 	return (NULL);
 }
-void *debug(t_person *coder)
+
+static void	timed_action(t_person *coder, int duration, char *msg)
 {
-  pthread_mutex_lock(&coder->lock);
-  busy_sleep(coder->config,&coder->config->time_to_debug);
-  if (is_dead(coder->config))
-  {
-    pthread_mutex_unlock(&coder->lock);
-    return  (NULL);
-  }
-  pthread_mutex_unlock(&coder->lock);
-  pthread_mutex_lock(&coder->config->print_lock);
-  if(!is_dead(coder->config))
-  {
-    printf("%ldms coder %d is debugging\n", mytime() - coder->config->start, coder->name);
-  }
-  pthread_mutex_unlock(&coder->config->print_lock);
-  return (NULL);
+	log_state(coder, msg);
+	busy_sleep(coder->config, &duration);
 }
 
-void *refactor(t_person *coder)
+void	*debug(t_person *coder)
 {
-pthread_mutex_lock(&coder->lock);
-  busy_sleep(coder->config,&coder->config->time_to_refactor);
-  if (is_dead(coder->config))
-  {
-    pthread_mutex_unlock(&coder->lock);
-    return  (NULL);
-  }
-  pthread_mutex_unlock(&coder->lock);
-  pthread_mutex_lock(&coder->config->print_lock);
-  if(!is_dead(coder->config))
-  {
-    printf("%ldms coder %d is refactoring\n", mytime() - coder->config->start, coder->name);
-  }
-  pthread_mutex_unlock(&coder->config->print_lock);
-  return (NULL);
+	timed_action(coder, coder->config->time_to_debug, "is debugging");
+	return (NULL);
 }
+
+void	*refactor(t_person *coder)
+{
+	timed_action(coder, coder->config->time_to_refactor, "is refactoring");
+	return (NULL);
+}
+
 void	unlock_sticks(t_person *coder)
 {
-	release(coder->left_stick);
+	release(coder->left_stick, coder->config);
 	if (coder->right_stick != coder->left_stick)
-		release(coder->right_stick);
+		release(coder->right_stick, coder->config);
 	coder->held_sticks[0] = NULL;
 	coder->held_sticks[1] = NULL;
 	coder->held_count = 0;
@@ -97,8 +71,8 @@ void	*coder_routine(void *arg)
 			break ;
 		compile(coder);
 		unlock_sticks(coder);
-    debug(coder);
-    refactor(coder);
+		debug(coder);
+		refactor(coder);
 	}
 	return (NULL);
 }

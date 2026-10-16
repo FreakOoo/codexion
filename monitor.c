@@ -1,7 +1,5 @@
 #include "codexion.h"
 
-// trylock so a busy coder is skipped this tick instead of syncing the
-// monitor's polling to their busy periods (which would alias past idle time)
 static int	is_burnt_out(t_person *coder, int ttb)
 {
 	long	elapsed;
@@ -33,6 +31,20 @@ static int	all_done(t_person *coders, int noc)
 	return (1);
 }
 
+static void	wake_all(t_person *coders)
+{
+	int	i;
+
+	i = 0;
+	while (i < coders->config->number_of_coders)
+	{
+		pthread_mutex_lock(&coders[i].left_stick->lock);
+		pthread_cond_broadcast(&coders[i].left_stick->waiting_room);
+		pthread_mutex_unlock(&coders[i].left_stick->lock);
+		i++;
+	}
+}
+
 static void	report_burnout(t_person *coder)
 {
 	int	already_dead;
@@ -44,12 +56,11 @@ static void	report_burnout(t_person *coder)
 	if (already_dead)
 		return ;
 	pthread_mutex_lock(&coder->config->print_lock);
-	printf("%ld coder %d is burnt out\n",
+	printf("%ld %d burned out\n",
 		mytime() - coder->config->start, coder->name);
 	pthread_mutex_unlock(&coder->config->print_lock);
 }
 
-// flipping dead here stops everything the same way report_burnout does
 static void	report_success(t_person *coder)
 {
 	int	already_dead;
@@ -60,13 +71,6 @@ static void	report_success(t_person *coder)
 	if (!already_dead)
 		coder->config->finished = 1;
 	pthread_mutex_unlock(&coder->config->dead_lock);
-	if (already_dead)
-		return ;
-	pthread_mutex_lock(&coder->config->print_lock);
-	printf("%ld *SUCCESS*  all %d coders have compiled %d times\n",
-		mytime() - coder->config->start, coder->config->number_of_coders,
-		coder->config->number_of_compiles_required);
-	pthread_mutex_unlock(&coder->config->print_lock);
 }
 
 void	*monitor(void *arg)
@@ -82,13 +86,17 @@ void	*monitor(void *arg)
 		if (all_done(coders, noc))
 		{
 			report_success(coders);
+			wake_all(coders);
 			break ;
 		}
 		i = 0;
 		while (i < noc && !is_dead(coders->config))
 		{
 			if (is_burnt_out(&coders[i], coders->config->time_to_burnout))
+			{
 				report_burnout(&coders[i]);
+				wake_all(coders);
+			}
 			i++;
 		}
 		usleep(1000);

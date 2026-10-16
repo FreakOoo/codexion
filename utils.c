@@ -17,3 +17,12 @@ int	is_dead(t_config *config)
 	pthread_mutex_unlock(&config->dead_lock);
 	return (dead);
 }
+
+void	log_state(t_person *coder, const char *msg)
+{
+	pthread_mutex_lock(&coder->config->print_lock);
+	if (!is_dead(coder->config))
+		printf("%ld %d %s\n", mytime() - coder->config->start,
+			coder->name, msg);
+	pthread_mutex_unlock(&coder->config->print_lock);
+}

@@ -1,18 +1,10 @@
 #ifndef CODEXION_H
 # define CODEXION_H
 
-// default values below are unspecified by the subject; adjust if needed
-# define DEFAULT_NOC 100
-# define DEFAULT_TTB 800
-# define DEFAULT_TTC 200
-# define DEFAULT_TTD 200
-# define DEFAULT_TTR 200
-# define DEFAULT_COMPILES 3
-# define DEFAULT_DONGLE_COOLDOWN 100
-# define DEFAULT_SCHEDULER 0
 # define FIFO 0
 # define EDF 1
 
+# include <limits.h>
 # include <pthread.h>
 # include <stdio.h>
 # include <unistd.h>
@@ -31,7 +23,6 @@ typedef struct s_config
 	int				dongle_cooldown;
 	int				scheduler;
 	int				dead;
-	// set alongside dead only on success; main() uses it to pick exit code
 	int				finished;
 	long			start;
 	pthread_mutex_t	print_lock;
@@ -47,13 +38,11 @@ typedef struct s_ask_forstick
 
 typedef struct s_stick
 {
-	int				available;
 	int				held;
 	long			available_at;
 	t_ask_forstick	*heap;
 	int				size;
 	long			next_inline;
-	long			last_use_timer;
 	pthread_mutex_t	lock;
 	pthread_cond_t	waiting_room;
 }	t_stick;
@@ -88,9 +77,9 @@ void			sift_down(t_ask_forstick *heap, int size, int i);
 
 long	mytime(void);
 int		is_dead(t_config *config);
-void	print_prompt(void);
-void	read_config(t_config *config);
+int		parse_args(t_config *config, int argc, char **argv);
 int		validate_config(t_config *config);
+void	log_state(t_person *coder, const char *msg);
 
 int		setup_world(t_world *world, t_config *config);
 void	cleanup(t_world *world, int n);
@@ -100,17 +89,17 @@ void	join_threads(t_world *world, int n);
 
 void	*coder_routine(void *arg);
 void	*compile(t_person *coder);
-void *debug(t_person *coder);
-void *refactor(t_person *coder);
+void	*debug(t_person *coder);
+void	*refactor(t_person *coder);
 void	unlock_sticks(t_person *coder);
 
 int		lock_sticks(t_person *coder);
 
 void	*monitor(void *arg);
-t_ask_forstick create_request(t_person *coder, t_stick *stick);
+t_ask_forstick	create_request(t_person *coder, t_stick *stick);
 
 int		acquire(t_stick *stick, t_person *coder);
-void	release(t_stick *stick);
+void	release(t_stick *stick, t_config *config);
 int		my_turn(t_stick *stick, t_person *coder);
 #endif
 
