@@ -55,10 +55,14 @@ int	setup_world(t_world *world, t_config *config)
 	world->sticks = malloc(sizeof(t_stick) * n);
 	world->coders = malloc(sizeof(t_person) * n);
 	world->threads = malloc(sizeof(pthread_t) * n);
-	if (!world->sticks || !world->coders || !world->threads)
+	if (!world->sticks || !world->coders || !world->threads
+		|| !init_sticks(world->sticks, n))
+	{
+		free(world->sticks);
+		free(world->coders);
+		free(world->threads);
 		return (0);
-	if (!init_sticks(world->sticks, n))
-		return (0);
+	}
 	init_coders(world->coders, world->sticks, config, n);
 	return (1);
 }
