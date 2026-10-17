@@ -12,60 +12,83 @@
 
 #include "codexion.h"
 
-static void	wait_turn(t_stick *stick, t_person *coder)
+static long	earliest(t_stick *stick, t_config *config, long wake)
 {
-	t_ask_forstick	*ichiban;
+	long	end;
+
+	end = config->start + stick->available_at;
+	if (!stick->held && end < wake && end > mytime())
+		return (end);
+	return (wake);
+}
+
+static void	wait_turn(t_person *coder)
+{
 	struct timespec	moment;
 	long			wake;
 
-	ichiban = heap_peek(stick);
-	if (ichiban && ichiban->coder == coder->name && !stick->held)
+	wake = earliest(coder->right_stick, coder->config, mytime() + 5);
+	wake = earliest(coder->left_stick, coder->config, wake);
+	moment.tv_sec = wake / 1000;
+	moment.tv_nsec = (wake % 1000) * 1000000;
+	pthread_cond_timedwait(&coder->config->table_cond,
+		&coder->config->table_lock, &moment);
+}
+
+static void	enqueue(t_person *coder, int add)
+{
+	t_ask_forstick	ask;
+
+	if (add)
 	{
-		wake = coder->config->start + stick->available_at;
-		moment.tv_sec = wake / 1000;
-		moment.tv_nsec = (wake % 1000) * 1000000;
-		pthread_cond_timedwait(&stick->waiting_room, &stick->lock, &moment);
+		ask = create_request(coder);
+		heap_push(coder->left_stick, ask);
+		if (coder->right_stick != coder->left_stick)
+			heap_push(coder->right_stick, ask);
+		return ;
 	}
-	else
-		pthread_cond_wait(&stick->waiting_room, &stick->lock);
+	heap_remove(coder->left_stick, coder);
+	if (coder->right_stick != coder->left_stick)
+		heap_remove(coder->right_stick, coder);
 }
 
-int	my_turn(t_stick *stick, t_person *coder)
+int	acquire(t_person *coder)
 {
-	t_ask_forstick	*ichiban;
+	t_config	*config;
 
-	ichiban = heap_peek(stick);
-	if (!ichiban || ichiban->coder != coder->name)
-		return (0);
-	if (stick->held)
-		return (0);
-	return (mytime() - coder->config->start >= stick->available_at);
-}
-
-int	acquire(t_stick *stick, t_person *coder)
-{
-	pthread_mutex_lock(&stick->lock);
-	heap_push(stick, create_request(coder, stick));
-	while (!my_turn(stick, coder))
+	config = coder->config;
+	pthread_mutex_lock(&config->table_lock);
+	enqueue(coder, 1);
+	while (!my_turn(coder))
 	{
-		if (is_dead(coder->config))
+		if (is_dead(config))
 		{
-			pthread_mutex_unlock(&stick->lock);
+			enqueue(coder, 0);
+			pthread_mutex_unlock(&config->table_lock);
 			return (0);
 		}
-		wait_turn(stick, coder);
+		wait_turn(coder);
 	}
-	heap_pop(stick);
-	stick->held = 1;
-	pthread_mutex_unlock(&stick->lock);
+	enqueue(coder, 0);
+	coder->left_stick->held = 1;
+	coder->right_stick->held = 1;
+	pthread_cond_broadcast(&config->table_cond);
+	pthread_mutex_unlock(&config->table_lock);
 	return (1);
 }
 
-void	release(t_stick *stick, t_config *config)
+void	release(t_person *coder)
 {
-	pthread_mutex_lock(&stick->lock);
-	stick->held = 0;
-	stick->available_at = mytime() - config->start + config->dongle_cooldown;
-	pthread_cond_broadcast(&stick->waiting_room);
-	pthread_mutex_unlock(&stick->lock);
+	t_config	*config;
+	long		ready_at;
+
+	config = coder->config;
+	pthread_mutex_lock(&config->table_lock);
+	ready_at = mytime() - config->start + config->dongle_cooldown;
+	coder->left_stick->held = 0;
+	coder->left_stick->available_at = ready_at;
+	coder->right_stick->held = 0;
+	coder->right_stick->available_at = ready_at;
+	pthread_cond_broadcast(&config->table_cond);
+	pthread_mutex_unlock(&config->table_lock);
 }

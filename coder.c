@@ -14,12 +14,7 @@
 
 void	unlock_sticks(t_person *coder)
 {
-	release(coder->left_stick, coder->config);
-	if (coder->right_stick != coder->left_stick)
-		release(coder->right_stick, coder->config);
-	coder->held_sticks[0] = NULL;
-	coder->held_sticks[1] = NULL;
-	coder->held_count = 0;
+	release(coder);
 }
 
 void	*coder_routine(void *arg)

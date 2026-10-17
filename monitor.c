@@ -16,8 +16,7 @@ static int	is_burnt_out(t_person *coder, int ttb)
 {
 	long	elapsed;
 
-	if (pthread_mutex_trylock(&coder->lock) != 0)
-		return (0);
+	pthread_mutex_lock(&coder->lock);
 	elapsed = (mytime() - coder->config->start) - coder->last_compile;
 	pthread_mutex_unlock(&coder->lock);
 	return (elapsed >= ttb);
@@ -31,8 +30,7 @@ static int	all_done(t_person *coders, int noc)
 	i = 0;
 	while (i < noc)
 	{
-		if (pthread_mutex_trylock(&coders[i].lock) != 0)
-			return (0);
+		pthread_mutex_lock(&coders[i].lock);
 		done = (coders[i].compiles
 				>= coders[i].config->number_of_compiles_required);
 		pthread_mutex_unlock(&coders[i].lock);

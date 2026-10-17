@@ -14,18 +14,11 @@
 
 static void	busy_sleep(t_config *config, int *action)
 {
-	long	leftover;
-	long	step;
+	long	end;
 
-	leftover = (long)*action * 1000;
-	while (leftover > 0 && !is_dead(config))
-	{
-		step = 1000;
-		if (leftover < step)
-			step = leftover;
-		usleep(step);
-		leftover -= step;
-	}
+	end = mytime() + *action;
+	while (mytime() < end && !is_dead(config))
+		usleep(500);
 }
 
 void	*compile(t_person *coder)

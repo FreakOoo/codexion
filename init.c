@@ -19,7 +19,7 @@ static int	init_sticks(t_stick *sticks, int n)
 	i = 0;
 	while (i < n)
 	{
-		sticks[i].heap = malloc(sizeof(t_ask_forstick) * n);
+		sticks[i].heap = malloc(sizeof(t_ask_forstick) * 2);
 		if (!sticks[i].heap)
 		{
 			while (i-- > 0)
@@ -29,9 +29,6 @@ static int	init_sticks(t_stick *sticks, int n)
 		sticks[i].held = 0;
 		sticks[i].available_at = 0;
 		sticks[i].size = 0;
-		sticks[i].next_inline = 0;
-		pthread_mutex_init(&sticks[i].lock, NULL);
-		pthread_cond_init(&sticks[i].waiting_room, NULL);
 		i++;
 	}
 	return (1);
@@ -50,9 +47,6 @@ static void	init_coders(t_person *coders, t_stick *sticks,
 		coders[i].last_compile = 0;
 		coders[i].left_stick = &sticks[i];
 		coders[i].right_stick = &sticks[(i + 1) % n];
-		coders[i].held_sticks[0] = NULL;
-		coders[i].held_sticks[1] = NULL;
-		coders[i].held_count = 0;
 		coders[i].config = config;
 		pthread_mutex_init(&coders[i].lock, NULL);
 		i++;
@@ -79,15 +73,13 @@ int	setup_world(t_world *world, t_config *config)
 	return (1);
 }
 
-void	cleanup(t_world *world, int n)
+void	cleanup(t_world *world, t_config *config)
 {
 	int	i;
 
 	i = 0;
-	while (i < n)
+	while (i < config->number_of_coders)
 	{
-		pthread_mutex_destroy(&world->sticks[i].lock);
-		pthread_cond_destroy(&world->sticks[i].waiting_room);
 		free(world->sticks[i].heap);
 		pthread_mutex_destroy(&world->coders[i].lock);
 		i++;

@@ -19,15 +19,22 @@ void	heap_push(t_stick *stick, t_ask_forstick ask)
 	stick->size++;
 }
 
-t_ask_forstick	heap_pop(t_stick *stick)
+void	heap_remove(t_stick *stick, t_person *coder)
 {
-	t_ask_forstick	top;
+	int	i;
 
-	top = stick->heap[0];
+	i = 0;
+	while (i < stick->size && stick->heap[i].coder != coder)
+		i++;
+	if (i == stick->size)
+		return ;
 	stick->size--;
-	stick->heap[0] = stick->heap[stick->size];
-	sift_down(stick->heap, stick->size, 0);
-	return (top);
+	stick->heap[i] = stick->heap[stick->size];
+	if (i < stick->size)
+	{
+		sift_up(stick->heap, i);
+		sift_down(stick->heap, stick->size, i);
+	}
 }
 
 t_ask_forstick	*heap_peek(t_stick *stick)

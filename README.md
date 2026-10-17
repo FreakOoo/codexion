@@ -56,31 +56,35 @@ example: `./codexion 5 800 100 50 50 3 20 fifo`
 
 **Blocking cases handled**
 
-- Deadlock: every coder takes their two dongles in the same global order
-  (lower address first), so a circular wait can't form.
-- Starvation: each dongle has a priority queue. Every request gets a ticket
-  number (per dongle). FIFO ranks by ticket, EDF ranks by deadline
-  (last compile start + time to burnout). Equal deadlines are broken by the
-  lower ticket, so the result is always deterministic.
-- Cooldown: on release, the dongle records when it is usable again
-  (now + cooldown). The coder first in line sleeps until that moment.
-- Wake-ups: a release wakes everyone waiting on that dongle. Each checks
-  if they are first in line and the cooldown is over, otherwise they sleep again.
+- Deadlock: a coder takes both dongles at once or none, so nobody ever holds
+  one dongle while waiting for the other (no hold-and-wait).
+- Starvation: every request gets a global ticket. FIFO ranks by ticket, EDF
+  ranks by deadline (last compile start + time to burnout), equal deadlines
+  are broken by the lower ticket, so the result is always deterministic.
+  Each dongle has a priority queue (heap) of the coders waiting for it. A coder
+  starts when both dongles are free and no higher-priority neighbour who can
+  start right now is waiting for one of them. A neighbour that is blocked
+  does not hold the others back, so non-adjacent coders compile in parallel.
+- Cooldown: on release, each dongle records when it is usable again
+  (now + cooldown), and waiters sleep until then.
 - Burnout: a monitor thread checks every ms, sets a shared dead flag,
   prints the burnout line, and wakes all sleeping coders so threads can be joined.
 - Logs: one print mutex, and nothing is printed once the dead flag is set.
 
 **Thread synchronization mechanisms**
 
-- Mutex per dongle: protects its state (held, cooldown, queue), so two
-  coders can't take the same dongle.
+- table_lock (one mutex) protects the state of all dongles (held, cooldown,
+  queue), because deciding who may start needs the state of both dongles and
+  of the neighbours at the same instant. This is what stops two coders from
+  taking the same dongle.
+- table_cond (one condition variable) is where waiting coders sleep. They use
+  cond_timedwait to wake when a cooldown ends, and every release or take
+  broadcasts so they re-check.
 - Mutex per coder: protects last_compile and compiles, which the monitor reads.
 - print_lock serializes output, dead_lock protects the dead / finished flags.
-- Condition variable per dongle: coders sleep on it (cond_wait), and the
-  first in line uses cond_timedwait to wake when the cooldown ends.
-- Coders and monitor only communicate through the dead flag. The monitor
-  broadcasts on every dongle (under its lock) after setting it, so no coder
-  can miss it and sleep forever.
+- Coders and monitor only communicate through the dead flag. After setting it
+  the monitor broadcasts on table_cond (under table_lock), so no coder can
+  miss it and sleep forever.
 - Race avoided: checking "is it my turn?" and going to sleep both happen under
-  the dongle's mutex (cond_wait releases it atomically), so a release can't
-  slip in between and be missed.
+  table_lock (cond_wait releases it atomically), so a release can't slip in
+  between and be missed.

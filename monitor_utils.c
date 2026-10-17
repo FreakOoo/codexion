@@ -14,16 +14,9 @@
 
 void	wake_all(t_person *coders)
 {
-	int	i;
-
-	i = 0;
-	while (i < coders->config->number_of_coders)
-	{
-		pthread_mutex_lock(&coders[i].left_stick->lock);
-		pthread_cond_broadcast(&coders[i].left_stick->waiting_room);
-		pthread_mutex_unlock(&coders[i].left_stick->lock);
-		i++;
-	}
+	pthread_mutex_lock(&coders->config->table_lock);
+	pthread_cond_broadcast(&coders->config->table_cond);
+	pthread_mutex_unlock(&coders->config->table_lock);
 }
 
 void	report_burnout(t_person *coder)
