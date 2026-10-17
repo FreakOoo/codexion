@@ -1,6 +1,6 @@
-_This project has been created as part of the 42 curriculum by mchopin_
+*This project has been created as part of the 42 curriculum by mchopin*
 
-*DESCRIPTION*
+**DESCRIPTION**
 
 This project is a revamp of the classic philosophers problem. Its purpose is to 
 teach how threads work.
@@ -23,7 +23,7 @@ way, like taking sticks someone else needs more desperately.
 And we need to avoid things like two coders taking the same stick at once.
 
 
-*INSTRUCTIONS*
+**INSTRUCTIONS**
 
 To run this program:
 
@@ -37,36 +37,50 @@ now you can type in ./codexion
 
 followed by a space, the parameters of your liking in the following order:
 
+```
 ./codexion number_of_coders time_to_burnout time_to_compile
-        time_to_debug time_to_refactor number_of_compiles_required
-        dongle_cooldown scheduler(fifo|edf)
+           time_to_debug time_to_refactor number_of_compiles_required
+           dongle_cooldown scheduler(fifo|edf)
+```
 
 this is reiterated at the top of main.c
 
-example: ./codexion 100 1 1 1 3 2 fifo
+example: `./codexion 5 800 100 50 50 3 20 fifo`
 
-*RESSOURCES*
+**RESOURCES**
 
 - lots of youtube videos (especially oceano has a good one on deadlocks)
 - geeksforgeeks (they have a great intro to multithreading)
-- Deepseek and Claude for concept explanations and debugging
+- Deepseek and Claude for concept explanations and debugging (and to make my ranting clearer in this README.)
 
 
-*Blocking cases handled*
+**Blocking cases handled**
 
-To avoid two coders grabbing the same dongle at once,
-if all else fails and they are equally eligible to grab it 
-(near impossible but still), then one gets priority just based on his ID.
+- Deadlock: every coder takes their two dongles in the same global order
+  (lower address first), so a circular wait can't form.
+- Starvation: each dongle has a priority queue. Every request gets a ticket
+  number (per dongle). FIFO ranks by ticket, EDF ranks by deadline
+  (last compile start + time to burnout). Equal deadlines are broken by the
+  lower ticket, so the result is always deterministic.
+- Cooldown: on release, the dongle records when it is usable again
+  (now + cooldown). The coder first in line sleeps until that moment.
+- Wake-ups: a release wakes everyone waiting on that dongle. Each checks
+  if they are first in line and the cooldown is over, otherwise they sleep again.
+- Burnout: a monitor thread checks every ms, sets a shared dead flag,
+  prints the burnout line, and wakes all sleeping coders so threads can be joined.
+- Logs: one print mutex, and nothing is printed once the dead flag is set.
 
-once the scheduler was added all coders are given a permission slip with a priority ranknig
+**Thread synchronization mechanisms**
 
-When a dongle finishes it's cooldown all coders in the waiting room wake up,
-check if they are at the top of the priority list, if yes, grab the dongle,
-if not, go back to sleep.
-
-Based on if you choose FIFO (first in first out), or EDF which prioritises
-the coder closest to death, the mechanism is slightly different.
-
-*Thread sychronization mechanisms*
-
-
+- Mutex per dongle: protects its state (held, cooldown, queue), so two
+  coders can't take the same dongle.
+- Mutex per coder: protects last_compile and compiles, which the monitor reads.
+- print_lock serializes output, dead_lock protects the dead / finished flags.
+- Condition variable per dongle: coders sleep on it (cond_wait), and the
+  first in line uses cond_timedwait to wake when the cooldown ends.
+- Coders and monitor only communicate through the dead flag. The monitor
+  broadcasts on every dongle (under its lock) after setting it, so no coder
+  can miss it and sleep forever.
+- Race avoided: checking "is it my turn?" and going to sleep both happen under
+  the dongle's mutex (cond_wait releases it atomically), so a release can't
+  slip in between and be missed.
