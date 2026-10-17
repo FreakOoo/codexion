@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                I AM HIJACKING THE 42LOGO   */
+/*   threads.c                                    THIS MESSAGE IS BROADCAST   */
+/*                                                       BY FREAKO            */
+/*   By: mchopin <mchopin@student.codam.nl>       WAWAWAWAWAWAWAWAWAWAWAWAW   */
+/*                                                HEHE HERE'S YOUR NEW LOGO   */
+/*   Created: 2026/10/17 21:28:02 by mchopin                42                */
+/*   Updated: 2026/10/17 21:28:03 by mchopin      get shrinkified nerds >:)   */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "codexion.h"
 
 static void	abort_threads(t_config *config, t_world *world, int created)

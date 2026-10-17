@@ -51,7 +51,10 @@ example: `./codexion 5 800 100 50 50 3 20 fifo`
 
 - lots of youtube videos (especially oceano has a good one on deadlocks)
 - geeksforgeeks (they have a great intro to multithreading)
-- Deepseek and Claude for concept explanations and debugging (and to make my ranting clearer in this README.)
+- Deepseek and Claude for concept explanations
+, as help for debugging
+, to restructure my work to become norm compliant
+, (and to make my ranting clearer in this README.)
 
 
 **Blocking cases handled**
