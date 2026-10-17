@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                I AM HIJACKING THE 42LOGO   */
+/*   heap.c                                       THIS MESSAGE IS BROADCAST   */
+/*                                                       BY FREAKO            */
+/*   By: mchopin <mchopin@student.codam.nl>       WAWAWAWAWAWAWAWAWAWAWAWAW   */
+/*                                                HEHE HERE'S YOUR NEW LOGO   */
+/*   Created: 2026/10/17 18:58:34 by mchopin                42                */
+/*   Updated: 2026/10/17 18:58:34 by mchopin      get shrinkified nerds >:)   */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "codexion.h"
 
 void	heap_push(t_stick *stick, t_ask_forstick ask)

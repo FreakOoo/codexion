@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                I AM HIJACKING THE 42LOGO   */
+/*   actions.c                                    THIS MESSAGE IS BROADCAST   */
+/*                                                       BY FREAKO            */
+/*   By: mchopin <mchopin@student.codam.nl>       WAWAWAWAWAWAWAWAWAWAWAWAW   */
+/*                                                HEHE HERE'S YOUR NEW LOGO   */
+/*   Created: 2026/10/17 18:58:34 by mchopin                42                */
+/*   Updated: 2026/10/17 19:00:28 by mchopin      get shrinkified nerds >:)   */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "codexion.h"
 
 static void	busy_sleep(t_config *config, int *action)

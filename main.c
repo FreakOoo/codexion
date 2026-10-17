@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                I AM HIJACKING THE 42LOGO   */
+/*   main.c                                       THIS MESSAGE IS BROADCAST   */
+/*                                                       BY FREAKO            */
+/*   By: mchopin <mchopin@student.codam.nl>       WAWAWAWAWAWAWAWAWAWAWAWAW   */
+/*                                                HEHE HERE'S YOUR NEW LOGO   */
+/*   Created: 2026/10/17 18:58:35 by mchopin                42                */
+/*   Updated: 2026/10/17 18:58:35 by mchopin      get shrinkified nerds >:)   */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "codexion.h"
 // usage: ./codexion number_of_coders time_to_burnout time_to_compile
 //        time_to_debug time_to_refactor number_of_compiles_required
